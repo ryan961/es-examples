@@ -172,7 +172,7 @@ func TestComposite_DateHistogram_RuntimeMappings(t *testing.T) {
 		},
 	}
 
-	//t.Log(printQueryBody(aggs, query))
+	//t.Log(printQueryBody(aggs, query, "runtime_mappings", runtimeMappings))
 
 	search := cli.Search().Index(businessIndex...).RuntimeMappings(runtimeMappings).Size(0)
 	buckets, err := CompositeAggregation(ctx, search, aggs, query)
@@ -261,7 +261,7 @@ func TestComposite_DateHistogram_Range(t *testing.T) {
 		elastic.NewRangeQuery("@timestamp").Format("epoch_second").Gte(gte).Lt(lt),
 	)
 
-	t.Log(printQueryBody(aggs, query))
+	//t.Log(printQueryBody(aggs, query))
 
 	search := cli.Search().Index(businessIndex...).Size(0)
 	buckets, err := CompositeAggregation(ctx, search, aggs, query)

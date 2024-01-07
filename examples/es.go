@@ -2,7 +2,9 @@ package examples
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/olivere/elastic/v7"
 )
@@ -13,6 +15,8 @@ var (
 	password string
 
 	businessIndex = []string{"flower-business-*"}
+
+	testIndexName = "test-index"
 )
 
 func initEsClient(t *testing.T) *elastic.Client {
@@ -26,7 +30,7 @@ func initEsClient(t *testing.T) *elastic.Client {
 	return cli
 }
 
-func printQueryBody(aggs elastic.Aggregation, query elastic.Query) (string, error) {
+func printQueryBody(aggs elastic.Aggregation, query elastic.Query, keyvals ...any) (string, error) {
 	aggsSource, err := aggs.Source()
 	if err != nil {
 		return "", err
@@ -42,6 +46,23 @@ func printQueryBody(aggs elastic.Aggregation, query elastic.Query) (string, erro
 		"query": querySource,
 		"size":  0,
 	}
+
+	if len(keyvals)&1 != 1 {
+		for i := 0; i < len(keyvals); i += 2 {
+			body[fmt.Sprint(keyvals[i])] = keyvals[i+1]
+		}
+	}
+
 	bt, _ := json.Marshal(body)
 	return string(bt), nil
+}
+
+type tweet struct {
+	User     string    `json:"user"`
+	Message  string    `json:"message"`
+	Retweets int       `json:"retweets"`
+	Image    string    `json:"image,omitempty"`
+	Created  time.Time `json:"created,omitempty"`
+	Tags     []string  `json:"tags,omitempty"`
+	Location string    `json:"location,omitempty"`
 }
